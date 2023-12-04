@@ -1,0 +1,11 @@
+version: "3.0"
+name: sleep_module
+services:
+  sleep_node:
+    image: sleep_module
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python /sleep_module/src/sleep_rest_node.py
+    ports:
+      - 2000:2000
