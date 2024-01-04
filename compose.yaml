@@ -1,0 +1,58 @@
+name: sleep_module
+services:
+  ###########
+  # Modules #
+  ###########
+  sleep_module:
+    container_name: sleep_module
+    image: ${IMAGE}
+    build:
+      context: .
+      dockerfile: ${DOCKERFILE}
+    env_file: .env
+    command: python sleep_module/src/sleep_rest_node.py
+    ports:
+      - 2000:2000
+
+  #####################
+  # WEI Core Services #
+  #####################
+  wei_server:
+    image: ghcr.io/ad-sdl/wei
+    container_name: wei_server
+    ports:
+      - 8000:8000
+    volumes:
+      - ${WORKCELLS_DIR}:/workcell_defs
+      - ${WEI_DATA_DIR}:/home/app/.wei
+      - diaspora_config:/home/app/.diaspora
+    env_file: .env
+    command: python3 -m wei.server --workcell /workcell_defs/${WORKCELL_FILENAME} --use_diaspora ${USE_DIASPORA}
+    depends_on:
+      - wei_redis
+  wei_engine:
+    image: ghcr.io/ad-sdl/wei
+    container_name: wei_engine
+    volumes:
+      - ${WORKCELLS_DIR}:/workcell_defs
+      - ${WEI_DATA_DIR}:/home/app/.wei
+    env_file: .env
+    command: python3 -m wei.engine --workcell /workcell_defs/${WORKCELL_FILENAME} --use_diaspora ${USE_DIASPORA}
+    depends_on:
+      - wei_redis
+      - wei_server
+  wei_redis:
+    image: redis
+    container_name: wei_redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ${REDIS_DIR}:/data
+    command: redis-server --save 60 1 --loglevel warning
+
+################
+# Data Storage #
+################
+volumes:
+  diaspora_config:
+    driver: local

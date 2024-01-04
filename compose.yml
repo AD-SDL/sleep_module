@@ -1,9 +1,0 @@
-version: "3.0"
-name: sleep_module
-services:
-  sleep_node:
-    image: ghcr.io/ad-sdl/sleep_module
-    command: python /sleep_module/src/sleep_rest_node.py
-    ports:
-      - 2000:2000
-
