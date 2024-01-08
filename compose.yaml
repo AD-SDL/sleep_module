@@ -9,6 +9,9 @@ services:
     build:
       context: .
       dockerfile: ${DOCKERFILE}
+    volumes:
+      - ./src:/home/app/sleep_module/src
+      - ./tests:/home/app/sleep_module/tests
     env_file: .env
     command: python sleep_module/src/sleep_rest_node.py
     ports:

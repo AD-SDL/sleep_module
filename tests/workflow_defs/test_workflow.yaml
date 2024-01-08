@@ -1,0 +1,17 @@
+name: Test Sleep Module
+metadata:
+  author: Ryan D. Lewis
+  info: Tests the functionality of the Sleep Module
+  version: 0.1
+
+modules:
+  - name: sleeper
+
+flowdef:
+  - name: Sleep workcell for t seconds
+    module: sleeper
+    action: sleep
+    args:
+      t: payload.t
+    checks: null
+    comment: Sleep for 5 seconds before we take a picture
