@@ -5,11 +5,20 @@ import json
 import time
 from argparse import ArgumentParser
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from wei.core.data_classes import ModuleStatus, StepResponse, StepStatus
+from wei.core.data_classes import (
+    ModuleAbout,
+    ModuleAction,
+    ModuleActionArg,
+    ModuleStatus,
+    StepResponse,
+    StepStatus,
+)
+from wei.helpers import extract_version
 
 state: ModuleStatus
 module_resources: Any
@@ -57,7 +66,28 @@ def get_state() -> JSONResponse:
 async def about() -> JSONResponse:
     """Returns a description of the actions and resources the module supports"""
     global state
-    return JSONResponse(content={"About": ""})
+    about = ModuleAbout(
+        name="Sleep Module",
+        description="A module that sleeps for a specified amount of time",
+        interface="wei_rest_node",
+        version=extract_version(Path(__file__).parent.parent / "pyproject.toml"),
+        actions=[
+            ModuleAction(
+                name="sleep",
+                description="Sleep for a specified amount of time",
+                args=[
+                    ModuleActionArg(
+                        name="t",
+                        description="The amount of time to sleep for, as an integer in seconds",
+                        type="int",
+                        required=True,
+                    )
+                ],
+            )
+        ],
+        resource_pools=[],
+    )
+    return JSONResponse(content=about.model_dump(mode="json"))
 
 
 @app.get("/resources")
