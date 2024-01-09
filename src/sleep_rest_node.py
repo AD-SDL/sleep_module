@@ -9,7 +9,6 @@ from typing import Any
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-
 from wei.core.data_classes import ModuleStatus, StepResponse, StepStatus
 
 state: ModuleStatus
