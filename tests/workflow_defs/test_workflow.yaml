@@ -12,6 +12,6 @@ flowdef:
     module: sleeper
     action: sleep
     args:
-      t: payload.t
+      t: 5
     checks: null
     comment: Sleep for 5 seconds before we take a picture
