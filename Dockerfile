@@ -31,5 +31,6 @@ RUN --mount=type=cache,target=/home/${CONTAINER_USER}/.cache,uid=${USER_ID},gid=
 CMD ["python", "sleep_module/src/sleep_rest_node.py"]
 
 #########################################
+# Disable automatic host user matching
 #USER root
 ENTRYPOINT []
