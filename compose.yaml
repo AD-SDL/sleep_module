@@ -9,6 +9,10 @@ services:
     build:
       context: .
       dockerfile: ${DOCKERFILE}
+      tags:
+        - ${IMAGE}:latest
+        - ${IMAGE}:${PROJECT_VERSION}
+        - ${IMAGE}:dev
     volumes:
       - ./src:/home/app/sleep_module/src
       - ./tests:/home/app/sleep_module/tests

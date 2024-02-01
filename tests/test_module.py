@@ -6,7 +6,7 @@ from pathlib import Path
 
 import requests
 from wei import ExperimentClient
-from wei.core.data_classes import WorkcellData, WorkflowStatus, ModuleAbout
+from wei.core.data_classes import ModuleAbout, WorkcellData, WorkflowStatus
 
 
 class TestWEI_Base(unittest.TestCase):
@@ -23,7 +23,7 @@ class TestWEI_Base(unittest.TestCase):
         self.server_host = self.workcell.config.server_host
         self.server_port = self.workcell.config.server_port
         self.url = f"http://{self.server_host}:{self.server_port}"
-        self.module_url = "http://localhost:2000"
+        self.module_url = "http://sleep_module:2000"
         self.redis_host = self.workcell.config.redis_host
 
         # Check to see that server is up
@@ -61,6 +61,7 @@ class TestSleepModule(TestWEI_Base):
         response = requests.get(self.module_url + "/about")
         assert response.status_code == 200
         ModuleAbout(**response.json())
+
 
 if __name__ == "__main__":
     unittest.main()
