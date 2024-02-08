@@ -16,7 +16,8 @@ COPY ./pyproject.toml sleep_module/pyproject.toml
 COPY ./tests sleep_module/tests
 
 RUN --mount=type=cache,target=/root/.cache \
-    pip install -e ./sleep_module
+    pip install ./sleep_module
+
 
 CMD ["python", "sleep_module/src/sleep_rest_node.py"]
 

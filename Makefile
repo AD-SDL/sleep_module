@@ -1,25 +1,25 @@
-################################################################################
-# AD-SDL WEI Template Makefile
-################################################################################
-MAKEFILE := $(lastword $(MAKEFILE_LIST))
-MAKEFILE_DIR := $(dir $(MAKEFILE))
-INCLUDE_DIR := $(MAKEFILE_DIR)/make
+# Python Configuration
+PYPROJECT_TOML := pyproject.toml
+PROJECT_VERSION := $(shell grep -oP '(?<=version = ")[^"]+' $(PYPROJECT_TOML) | head -n 1)
 
-include $(INCLUDE_DIR)/boilerplate.mk # Boilerplate, can probably leave as-is
-include $(INCLUDE_DIR)/config.mk # Project-specific configuration
-include $(INCLUDE_DIR)/docker.mk # Docker-related rules
+.DEFAULT_GOAL := init
 
-################################################################################
-# Rules: Add anything you want to be able to run with `make <target>` below
+.PHONY += init paths checks test
+init: # Do the initial configuration of the project
+	@test -e .env || cp example.env .env
+	@sed -i 's/^USER_ID=.*/USER_ID=$(shell id -u)/' .env
+	@sed -i 's/^GROUP_ID=.*/GROUP_ID=$(shell id -g)/' .env
+	@sed -i 's/^PROJECT_VERSION=.*/PROJECT_VERSION=$(PROJECT_VERSION)/' .env
+	@sed -i 's/^PROJECT_PATH=.*/PROJECT_PATH=$(shell pwd | sed 's/\//\\\//g')/' .env
+
+paths: # Create the necessary data directories
+	@. .env && mkdir -p $$WEI_DATA_DIR && mkdir -p $$REDIS_DIR
 
 checks: # Runs all the pre-commit checks
 	@pre-commit install
 	@pre-commit run --all-files || { echo "Checking fixes\n" ; pre-commit run --all-files; }
 
-test: init start # Runs all the tests
-	$(DC) exec $(APP_NAME) pytest -p no:cacheprovider ${MODULE_NAME} $(args)
-
-################################################################################
-
-# Determine which rules don't correspond to actual files (add rules to NOT_PHONY to exclude)
-.PHONY: $(filter-out $(NOT_PHONY), $(RULES))
+test: init paths # Runs all the tests
+	@docker compose -f wei_core.compose.yaml up --build -d
+	@docker compose -f wei_core.compose.yaml exec sleep_module pytest -p no:cacheprovider sleep_module
+	@docker compose -f wei_core.compose.yaml down

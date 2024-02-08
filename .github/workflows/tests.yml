@@ -8,13 +8,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         name: Checkout code
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.9
-      - name: Build the Project
-        run: make init build
-      - name: Test with pytest
+      - name: Initialize, Build, and Test with Docker
         run: make test
-      - name: Cleanup
-        run: make remove
