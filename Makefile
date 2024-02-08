@@ -12,7 +12,9 @@ init: # Do the initial configuration of the project
 	@sed -i 's/^PROJECT_VERSION=.*/PROJECT_VERSION=$(PROJECT_VERSION)/' .env
 	@sed -i 's/^PROJECT_PATH=.*/PROJECT_PATH=$(shell pwd | sed 's/\//\\\//g')/' .env
 
-paths: # Create the necessary data directories
+.env: init
+
+paths: .env # Create the necessary data directories
 	@. .env && mkdir -p $$WEI_DATA_DIR && mkdir -p $$REDIS_DIR
 
 checks: # Runs all the pre-commit checks
