@@ -8,11 +8,13 @@ services:
     container_name: wei_server
     ports:
       - 8000:8000
+    env_file: .env
+    environment:
+      - PYTHONUNBUFFERED=1 # Fix weird bug with empty logging
     volumes:
       - ${WORKCELLS_DIR}:/workcell_defs
       - ${WEI_DATA_DIR}:/home/app/.wei
       - diaspora_config:/home/app/.diaspora
-    env_file: .env
     command: python3 -m wei.server --workcell /workcell_defs/${WORKCELL_FILENAME} --use_diaspora ${USE_DIASPORA}
     depends_on:
       - wei_redis
