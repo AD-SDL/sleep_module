@@ -13,6 +13,6 @@ services:
       - ./src:/home/app/sleep_module/src
       - ./tests:/home/app/sleep_module/tests
     env_file: .env
-    command: python sleep_module/src/sleep_rest_node.py
+    command: python -m sleep_rest_node --port 2000
     ports:
       - 2000:2000
