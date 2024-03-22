@@ -12,15 +12,11 @@ endif
 
 .env: init
 
-paths: .env # Create the necessary data directories
-	@mkdir -p $(shell grep -E '^WEI_DATA_DIR=' .env | cut -d '=' -f 2)
-	@mkdir -p $(shell grep -E '^REDIS_DIR=' .env | cut -d '=' -f 2)
-
 checks: # Runs all the pre-commit checks
 	@pre-commit install
 	@pre-commit run --all-files || { echo "Checking fixes\n" ; pre-commit run --all-files; }
 
-test: init .env paths # Runs all the tests
+test: init .env # Runs all the tests
 	@docker compose -f tests/wei.compose.yaml --env-file .env up --build -d
 	@docker compose -f tests/wei.compose.yaml --env-file .env exec sleep_module pytest -p no:cacheprovider sleep_module
 	@docker compose -f tests/wei.compose.yaml --env-file .env down

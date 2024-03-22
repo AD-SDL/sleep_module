@@ -17,10 +17,10 @@ source .venv/bin/activate
 # .venv\Scripts\activate
 
 # Install the module and dependencies in the venv
-pip install .
+pip install -e .
 
 # Run the environment
-python src/sleep_rest_node.py --host 0.0.0.0 --port 2000
+python -m sleep_rest_node --host 0.0.0.0 --port 2000
 ```
 
 ### Docker
@@ -28,8 +28,6 @@ python src/sleep_rest_node.py --host 0.0.0.0 --port 2000
 1. Install Docker for your platform of choice.
 2. Run `make init` to create the `.env` file, or copy `example.env` to `.env`
 3. Open the .env file and ensure that all values are set and correct.
-    1. Check that the `USER_ID` and `GROUP_ID` are correct, as these ensure correct file permissions (in most cases, they should match your user's UID and GID)
-    2. Check that the `WEI_DATA_DIR` and `REDIS_DIR` directories exist and have the appropriate permissions
 
 ```bash
 # Build and run just the module
@@ -39,5 +37,5 @@ docker compose up --build
 docker compose up --build -d
 
 # Run the module alongside a simple workcell (for testing)
-docker compose -f wei_core.compose.yaml up --build -d
+docker compose -f tests/wei_core.compose.yaml --env-file .env up --build -d
 ```
