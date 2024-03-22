@@ -13,8 +13,6 @@ services:
       - PYTHONUNBUFFERED=1 # Fix weird bug with empty logging
     volumes:
       - ${WORKCELLS_DIR}:/workcell_defs
-      - ${WEI_DATA_DIR}:/home/app/.wei
-      - diaspora_config:/home/app/.diaspora
     command: python3 -m wei.server --workcell /workcell_defs/${WORKCELL_FILENAME}
     depends_on:
       - wei_redis
@@ -23,7 +21,6 @@ services:
     container_name: wei_engine
     volumes:
       - ${WORKCELLS_DIR}:/workcell_defs
-      - ${WEI_DATA_DIR}:/home/app/.wei
     env_file: ../.env
     environment:
      - PYTHONUNBUFFERED=1 # Fix weird bug with empty logging
@@ -39,10 +36,3 @@ services:
     volumes:
       - ${REDIS_DIR}:/data
     command: redis-server --save 60 1 --loglevel warning
-
-################
-# Data Storage #
-################
-volumes:
-  diaspora_config:
-    driver: local

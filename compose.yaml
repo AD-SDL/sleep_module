@@ -5,7 +5,6 @@ services:
     image: ${IMAGE}
     build:
       context: .
-      dockerfile: ${DOCKERFILE}
       tags:
         - ${IMAGE}:latest
         - ${IMAGE}:dev

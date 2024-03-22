@@ -1,4 +1,4 @@
-"""Tests the basic functionality of the Sleep Module."""
+"""Tests the basic functionality of the Module."""
 
 import time
 import unittest
@@ -6,7 +6,7 @@ from pathlib import Path
 
 import requests
 from wei import ExperimentClient
-from wei.core.data_classes import ModuleAbout, WorkcellData, WorkflowStatus
+from wei.core.data_classes import ModuleAbout, Workcell, WorkflowStatus
 
 
 class TestWEI_Base(unittest.TestCase):
@@ -19,9 +19,14 @@ class TestWEI_Base(unittest.TestCase):
         self.workcell_file = self.root_dir / Path(
             "tests/workcell_defs/test_workcell.yaml"
         )
-        self.workcell = WorkcellData.from_yaml(self.workcell_file)
+        self.workcell = Workcell.from_yaml(self.workcell_file)
         self.server_host = self.workcell.config.server_host
         self.server_port = self.workcell.config.server_port
+        self.experiment = ExperimentClient(
+            self.server_host,
+            self.server_port,
+            "TestExperiment",
+        )
         self.url = f"http://{self.server_host}:{self.server_port}"
         self.module_url = "http://sleep_module:2000"
         self.redis_host = self.workcell.config.redis_host
@@ -30,7 +35,7 @@ class TestWEI_Base(unittest.TestCase):
         start_time = time.time()
         while True:
             try:
-                if requests.get(self.url + "/wc/state").status_code == 200:
+                if requests.get(self.url + "/wc/state").ok:
                     break
             except Exception:
                 pass
@@ -39,7 +44,7 @@ class TestWEI_Base(unittest.TestCase):
                 raise TimeoutError("Server did not start in 60 seconds")
         while True:
             try:
-                if requests.get(self.module_url + "/state").status_code == 200:
+                if requests.get(self.module_url + "/state").ok:
                     break
             except Exception:
                 pass
@@ -48,16 +53,14 @@ class TestWEI_Base(unittest.TestCase):
                 raise TimeoutError("Module did not start in 60 seconds")
 
 
-class TestSleepModule(TestWEI_Base):
-    """Tests the basic functionality of the Sleep Module."""
+class TestModuleInterfaces(TestWEI_Base):
+    """Tests the basic functionality of the Module."""
 
     def test_sleep_action(self):
         """Tests that the sleep action works"""
         # Send sleep action
-        exp = ExperimentClient(self.server_host, self.server_port, "")
-
         start_time = time.time()
-        result = exp.start_run(
+        result = self.experiment.start_run(
             Path(self.root_dir) / Path("tests/workflow_defs/test_workflow.yaml"),
             simulate=False,
             blocking=True,
@@ -65,8 +68,8 @@ class TestSleepModule(TestWEI_Base):
         assert result["status"] == WorkflowStatus.COMPLETED
         assert time.time() - start_time > 5
 
-    def test_sleep_about(self):
-        """Tests that the sleep /about works"""
+    def test_module_about(self):
+        """Tests that the module's /about endpoint works"""
         response = requests.get(self.module_url + "/about")
         assert response.status_code == 200
         ModuleAbout(**response.json())
