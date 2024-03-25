@@ -36,6 +36,6 @@ docker compose up --build
 # Run the module, but detach so you can keep working in the same terminal
 docker compose up --build -d
 
-# Run the module alongside a simple workcell (for testing)
-docker compose -f tests/wei_core.compose.yaml --env-file .env up --build -d
+# Run the module alongside a simple test workcell
+docker compose --profile wei up --build -d
 ```

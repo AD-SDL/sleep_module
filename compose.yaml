@@ -1,4 +1,7 @@
 name: sleep_module
+include:
+  - path: tests/wei.compose.yaml
+    env: .env
 services:
   sleep_module:
     container_name: sleep_module
