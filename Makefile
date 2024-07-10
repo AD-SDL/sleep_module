@@ -13,6 +13,8 @@ checks: # Runs all the pre-commit checks
 
 test: init .env # Runs all the tests
 	@docker compose --profile wei up --build -d
+	@sleep 10
+	@docker compose --profile wei logs
 	@docker compose --profile wei exec sleep_module pytest -p no:cacheprovider sleep_module
 	@docker compose --profile wei down
 
